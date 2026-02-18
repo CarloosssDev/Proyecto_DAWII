@@ -10,6 +10,8 @@ import cibertec.pe.dtos.DetallePedidoRequest;
 import cibertec.pe.dtos.DetallePedidoResponse;
 import cibertec.pe.dtos.PedidoRequest;
 import cibertec.pe.dtos.PedidoResponse;
+import cibertec.pe.entity.Cliente;
+import cibertec.pe.entity.Repartidor;
 import cibertec.pe.enums.EstadoPedido;
 import cibertec.pe.enums.MetodoPago;
 import cibertec.pe.feignclient.ClienteFeignClient;
@@ -105,14 +107,33 @@ public class PedidoImplement implements IPedidoService {
     }
 
     @Override
-    public Pedido buscarPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+    public PedidoResponse buscarPorId(Long id) {
+        Pedido pedido = repository.findById(id).get();
+        if (pedido == null) {
+            throw new RuntimeException("Pedido no encontrado");
+        }
+        Cliente cliente = clienteClient.buscarPorTelefono(pedido.getTelefonoCliente());
+        Repartidor repartidor = repartidorClient.obtenerPorId(pedido.getIdRepartidor());
+        List<DetallePedidoResponse> detallesResponse = new ArrayList<>();
+        for (DetallePedido det : pedido.getDetalles()) {
+            var infoProducto = productoClient.obtenerPorId(det.getIdProducto());
+            detallesResponse.add(detalleMapper.toResponse(det, infoProducto.getNombre()));
+        }
+        return pedidoMapper.toResponse(
+                pedido,
+                cliente.getNombre(),
+                cliente.getDireccion(),
+                repartidor.getNombre(),
+                detallesResponse);
     }
 
     @Override
     @Transactional
     public Pedido actualizarPedido(Long id, PedidoRequest pedido) {
-        Pedido existente = buscarPorId(id);
+        Pedido existente = repository.findById(id).orElse(null);
+        if (existente == null) {
+            throw new RuntimeException("Pedido no encontrado");
+        }
         existente.setIdRepartidor(pedido.getIdRepartidor());
         return repository.save(existente);
     }
@@ -120,7 +141,10 @@ public class PedidoImplement implements IPedidoService {
     @Override
     @Transactional
     public Pedido cambiarEstado(Long id, EstadoPedido nuevoEstado) {
-        Pedido pedido = buscarPorId(id);
+        Pedido pedido = repository.findById(id).orElse(null);
+        if (pedido == null) {
+            throw new RuntimeException("Pedido no encontrado");
+        }
         pedido.setEstado(nuevoEstado);
         return repository.save(pedido);
     }
@@ -128,7 +152,10 @@ public class PedidoImplement implements IPedidoService {
     @Override
     @Transactional
     public Pedido registrarPagoFinal(Long id, MetodoPago pago) {
-        Pedido pedido = buscarPorId(id);
+        Pedido pedido = repository.findById(id).orElse(null);
+        if (pedido == null) {
+            throw new RuntimeException("Pedido no encontrado");
+        }
         pedido.setMetodoPago(pago);
         return repository.save(pedido);
     }

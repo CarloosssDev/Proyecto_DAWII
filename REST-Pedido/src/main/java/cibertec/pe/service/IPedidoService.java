@@ -13,7 +13,7 @@ public interface IPedidoService {
 
     List<PedidoResponse> listarPedidos();
 
-    Pedido buscarPorId(Long id);
+    PedidoResponse buscarPorId(Long id);
 
     Pedido actualizarPedido(Long id, PedidoRequest pedido);
 
