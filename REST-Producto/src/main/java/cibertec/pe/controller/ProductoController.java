@@ -40,4 +40,24 @@ public class ProductoController {
 		Producto nuevo = service.crearProducto(producto);
 		return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
 	}
+
+	@PutMapping("/actualizar/{id}")
+	public ResponseEntity<?> actualizar(@PathVariable Long id, @RequestBody Producto producto) {
+		String resultado = service.actualizarProducto(id, producto);
+		if (resultado.equals("Producto actualizado correctamente")) {
+			return ResponseEntity.ok(resultado);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultado);
+		}
+	}
+
+	@DeleteMapping("/eliminar/{id}")
+	public ResponseEntity<?> eliminar(@PathVariable Long id) {
+		String resultado = service.eliminarProducto(id);
+		if (resultado.equals("Producto eliminado correctamente")) {
+			return ResponseEntity.ok(resultado);
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(resultado);
+		}
+	}
 }
