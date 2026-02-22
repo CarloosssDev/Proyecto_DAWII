@@ -1,0 +1,50 @@
+9005 POST /auth/register
+{
+    "name": "Jose",
+    "email": "jose@gmail.com",
+    "password": "123"
+}
+
+9005 POST /auth/token
+{
+    "username": "jose@gmail.com",
+    "password": "123"
+}
+
+8082 POST /api/clientes/crear Bearer Token
+{
+    "nombre": "Jose",
+    "direccion": "Av Libertad 19",
+    "telefono": "924647367"
+}
+
+8082 POST /api/productos/crear
+{
+    "descripcion": "Bidón de agua de 20 Lts.",
+    "id": 1,
+    "nombre": "AguaFiel",
+    "precio": 12.5
+}
+
+8082 POST /api/repartidores/crear
+{
+    "nombre": "Jhoe",
+    "apellido": "Velázquez"
+}
+
+8082 POST /api/pedidos/registrar
+{
+  "telefonoCliente": "924647367",
+  "idRepartidor": 1,
+  "detalles": [
+    {
+      "idProducto": 1,
+      "cantidad": 2
+    }, 
+    {
+        "idProducto": 3,
+        "cantidad": 1
+    }
+  ]
+}
+

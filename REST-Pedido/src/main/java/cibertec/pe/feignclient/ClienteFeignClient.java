@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import cibertec.pe.entity.Cliente;
 
-@FeignClient(name = "REST-Cliente", url = "http://localhost:9001")
+@FeignClient(name = "REST-Cliente", url = "http://localhost:9002")
 public interface ClienteFeignClient {
     @GetMapping("/api/clientes/telefono/{telefono}")
     Cliente buscarPorTelefono(@PathVariable("telefono") String telefono);
